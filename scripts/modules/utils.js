@@ -3,6 +3,7 @@ export const getCurrentDateTime = () => {
     'янв',
     'фев',
     'мар',
+    'апр',
     'май',
     'июн',
     'июл',
