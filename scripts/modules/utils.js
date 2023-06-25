@@ -1,3 +1,6 @@
+
+
+
 // const addZero = (n) => { 1ый вариант
 //   if (n < 10) {
 //     n = `0${n}`;
@@ -42,4 +45,76 @@ export const getCurrentDateTime = () => {
   const minutes = addZero(date.getMinutes());
 
   return { dayOfMonth, month, year, hours, minutes, dayOfWeek };
+};
+
+
+
+export const calculateDewPoint = (temp, humidity) => {
+
+  const a = 17.27;
+  const b = 237.7;
+
+  const ft = (a * temp) / (b + temp) + Math.log(humidity / 100);
+  const dewPoint = (b * ft) / (a - ft);
+  return dewPoint.toFixed(1);
+};
+
+export const convertPressure = (pressure) => {
+  const mmHg = pressure * 0.750063755419211;
+  return mmHg.toFixed(2);
+};
+
+export const getWeatherForecastData = (data) => {
+  const forecast = data.list.filter((item) => {
+    return new Date(item.dt_txt).getHours() === 12 &&
+      new Date(item.dt_txt).getDate() > new Date().getDate() &&
+      new Date(item.dt_txt).getDate() < new Date().getDate() + 5
+  });
+
+  const forecastData = forecast.map((item) => {
+    const date = new Date(item.dt_txt);
+    const weekdaysShort = [
+      'вс',
+      'пн',
+      'вт',
+      'ср',
+      'чт',
+      'пт',
+      'сб',
+    ];
+
+    const dayOfWeek = weekdaysShort[date.getDay()];
+    const weatherIcon = item.weather[0].icon;
+
+    let minTemp = Infinity;
+    let maxTemp = -Infinity;
+
+    for (let i = 0; i < data.list.length; i++) {
+      const temp = data.list[i].main.temp;
+      const tempDate = new Date(data.list[i].dt_txt);
+
+      if (tempDate.getDate() === date.getDate()) {  // 1 вариант
+        if (temp < minTemp) {
+          minTemp = temp;
+        }
+        if (temp > maxTemp) {
+          maxTemp = temp;
+        }
+      }
+
+      // if (tempDate.getDate() === date.getDate() && temp < minTemp) { //2 вариант
+      //   minTemp = temp;
+      // } else if (tempDate.getDate() === date.getDate() && temp < maxTemp) {
+      //   maxTemp = temp;
+      // }
+    }
+
+    return {
+      dayOfWeek,
+      weatherIcon,
+      minTemp,
+      maxTemp,
+    };
+  });
+  return forecastData;
 };
